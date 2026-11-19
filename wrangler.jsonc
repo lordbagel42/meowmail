@@ -1,0 +1,28 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "meow-mail",
+	"main": "src/index.ts",
+	"account_id": "2fa4104b17af8808577f12883fa657b1",
+	"compatibility_date": "2026-11-19",
+	"compatibility_flags": ["nodejs_compat"],
+	"workers_dev": false,
+	"preview_urls": false,
+	"routes": [{ "pattern": "temp.mrrpmraow.com", "custom_domain": true }],
+	"assets": {
+		"directory": "public",
+		"binding": "ASSETS",
+		"run_worker_first": true
+	},
+	"durable_objects": {
+		"bindings": [{ "name": "MAIL", "class_name": "MailService" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["MailService"] }],
+	"triggers": { "crons": ["0 8 * * *"] },
+	"observability": { "enabled": true, "head_sampling_rate": 1 },
+	"vars": {
+		"ORIGIN": "https://temp.mrrpmraow.com",
+		"MAIL_DOMAIN": "temp.mrrpmraow.com",
+		"ACCESS_ISSUER": "https://bagel.cloudflareaccess.com",
+		"ACCESS_AUD": "c51434143e411b6fbc577479235802b083efffbecc10b710e7f40e5cad46fa74"
+	}
+}

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta
+      name="description"
+      content="Receive-only temporary email, right in your Slack channel. Addresses last 24 hours."
+    />
+    <title>Meow Mail — temporary email in Slack</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/theme.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="/"
+        ><svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 14V5l8 5h4l8-5v15c0 6-20 6-20 0v-6Z" />
+          <path d="M11 17h1m8 0h1m-7 5h4" /></svg
+        >Meow Mail<span class="brand-note">/ for Slack</span></a
+      >
+      <nav aria-label="Main">
+        <a href="/tos.html">Terms</a
+        ><a href="/admin">Owner dashboard <span aria-hidden="true">↗</span></a
+        ><button
+          class="theme-button"
+          type="button"
+          data-theme-toggle
+        >
+          Theme: dark
+        </button>
+      </nav>
+    </header>
+    <main id="main" class="landing">
+      <section class="intro">
+        <div>
+          <h1>A little inbox.<br />A short stay.</h1>
+          <p class="lede">
+            Temporary email that lives in Slack.<br />Receive what you need.
+            Your address expires in 24 hours.
+          </p>
+          <a class="button primary" href="#how-it-works"
+            >Get an address</a
+          >
+          <p class="fine">
+            Receive-only. Shared with your channel. Never anonymous.
+          </p>
+        </div>
+        <div class="command-board">
+          <div class="board-header">
+            <span># meow-mail</span><span class="badge">How it works</span>
+          </div>
+          <p class="command-label">Your message in Slack</p>
+          <div class="command">
+            gib email<span class="cursor" aria-hidden="true"></span>
+          </div>
+          <div class="board-bottom">
+            <span>Accept the terms before receiving an address.</span
+            ><span class="mono">24h lifetime</span>
+          </div>
+        </div>
+      </section>
+      <section id="how-it-works" class="how">
+        <h2>One channel. No extra inbox to check.</h2>
+        <ol class="steps">
+          <li>
+            <h3>Join #meow-mail</h3>
+            <p>
+              Read the channel welcome and the
+              <a href="/tos.html">terms of service</a> before requesting an
+              address. Visiting this website does not count as acceptance.
+            </p>
+          </li>
+          <li>
+            <h3>Say <code>gib email</code></h3>
+            <p>
+              Send those exact words in the channel to request a temporary
+              address, then accept the terms using the bot's Slack button.
+              Each address receives email for 24 hours.
+            </p>
+          </li>
+          <li>
+            <h3>Read the thread</h3>
+            <p>
+              Incoming mail arrives in your Slack thread. Channel members can
+              read it too, so keep sensitive and confidential information out.
+            </p>
+          </li>
+        </ol>
+      </section>
+      <section class="rules">
+        <div>
+          <h2>Temporary does not mean unaccountable.</h2>
+          <p>
+            This is a shared utility, not a way around someone else's rules.
+          </p>
+        </div>
+        <ul>
+          <li>
+            No free trials, trial farming, spam, fraud, harassment, or other abuse.
+          </li>
+          <li>
+            All incoming email is logged and audited. Address expiry is not a
+            promise that logs or Slack messages are deleted.
+          </li>
+          <li>
+            Daily Pi + Tavily reviews may result in a ban. Automated detection
+            can miss abuse or flag legitimate use; it is not a guarantee of
+            safety.
+          </li>
+          <li>Receive-only: Meow Mail cannot send or reply to email.</li>
+        </ul>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <span
+        >Meow Mail
+        <span class="muted">/ 24 hours, then the address closes.</span></span
+      ><a href="/tos.html">Read the terms <span aria-hidden="true">↗</span></a>
+    </footer>
+  </body>
+</html>

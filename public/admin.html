@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Operations — Meow Mail</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/theme.js" defer></script>
+    <script src="/admin.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header admin-header">
+      <a class="brand" href="/"
+        >Meow Mail<span class="brand-note">/ operations</span></a
+      >
+      <nav aria-label="Account">
+        <span class="owner">me@raygen.dev</span
+        ><button class="theme-button" data-theme-toggle type="button">
+          Theme: dark
+        </button>
+      </nav>
+    </header>
+    <div class="admin-layout">
+      <aside class="sidebar">
+        <p class="sidebar-label">Workspace</p>
+        <nav aria-label="Dashboard">
+          <a href="#inbox" aria-current="page" data-view="inbox"
+            >Inbox <span id="nav-count">—</span></a
+          ><a href="#mailboxes" data-view="mailboxes">Mailboxes</a
+          ><a href="#bans" data-view="bans">Bans</a
+          ><a href="#audits" data-view="audits">Audit log</a
+          ><a href="#reviews" data-view="reviews">Reviews</a
+          ><a href="#settings" data-view="settings">Setup &amp; settings</a>
+        </nav>
+        <div class="sidebar-bottom">
+          <span class="status-dot"></span> Cloudflare Access
+          <p>Owner-only access is enforced by the server.</p>
+          <a href="/tos.html">Terms of service ↗</a>
+        </div>
+      </aside>
+      <main id="main" class="dashboard">
+        <div class="dashboard-heading">
+          <div>
+            <h1 id="view-title">Inbox</h1>
+            <p id="view-description">
+              Incoming mail across temporary addresses.
+            </p>
+          </div>
+          <button id="refresh" type="button">Refresh</button>
+        </div>
+        <div id="notice" role="status" aria-live="polite" hidden></div>
+        <div id="load-error" class="notice error" role="alert" hidden></div>
+        <div class="stats" role="group" aria-label="Workspace statistics">
+          <div>
+            <span>Active addresses</span><strong id="stat-active">—</strong>
+          </div>
+          <div>
+            <span>Emails received</span><strong id="stat-emails">—</strong>
+          </div>
+          <div><span>Banned users</span><strong id="stat-bans">—</strong></div>
+          <div class="service-state">
+            <span>New addresses</span
+            ><strong id="service-status">Loading…</strong>
+          </div>
+        </div>
+        <div id="setup-banner" class="notice" hidden>
+          Finish connecting your workspace before creating addresses.
+          <a href="#settings">Open setup &amp; settings</a>
+        </div>
+        <section id="inbox" class="view">
+          <div class="section-heading">
+            <h2>Received mail</h2>
+            <label class="search-label"
+              ><span>Search mail</span
+              ><input
+                id="mail-search"
+                type="search"
+                placeholder="Search sender, recipient, subject"
+            /></label>
+          </div>
+          <div id="email-list" class="table-wrap" aria-live="polite">
+            <p class="empty">Loading mail…</p>
+          </div>
+          <p class="fine">
+            Incoming content is untrusted. Messages open as plain text; links
+            and remote images do not load.
+          </p>
+        </section>
+        <section id="mailboxes" class="view" hidden>
+          <h2>Temporary addresses</h2>
+          <p class="muted">
+            Addresses receive mail for 24 hours. Expiry does not remove audit
+            history.
+          </p>
+          <div id="mailbox-list" class="table-wrap"></div>
+        </section>
+        <section id="bans" class="view" hidden>
+          <h2>Access restrictions</h2>
+          <form id="ban-form" class="inline-form">
+            <div>
+              <label for="ban-user">Slack user ID</label
+              ><input
+                id="ban-user"
+                name="user_id"
+                placeholder="U0123456789"
+                required
+                maxlength="100"
+              />
+            </div>
+            <div class="grow">
+              <label for="ban-reason">Reason</label
+              ><input
+                id="ban-reason"
+                name="reason"
+                placeholder="Describe the policy violation"
+                required
+                maxlength="2000"
+              />
+            </div>
+            <button type="submit">Ban user</button>
+          </form>
+          <p class="fine">
+            Banning restricts service access. Hardcoded bans cannot be removed
+            here.
+          </p>
+          <div id="ban-list" class="table-wrap"></div>
+        </section>
+        <section id="audits" class="view" hidden>
+          <h2>Audit trail</h2>
+          <p class="muted">Logged activity and enforcement events.</p>
+          <div id="audit-list" class="table-wrap"></div>
+        </section>
+        <section id="reviews" class="view" hidden>
+          <div class="section-heading">
+            <h2>Abuse reviews</h2>
+            <button id="run-review" type="button">Run review now</button>
+          </div>
+          <p class="muted">
+            Daily Pi + Tavily review uses your Codex subscription through
+            openai-codex / gpt-6.1-terra and may ban users. Manual review runs
+            asynchronously; refresh to see its result.
+          </p>
+          <p class="fine">
+            Automation can miss abuse or flag legitimate use. Review findings in
+            context.
+          </p>
+          <div id="review-list" class="table-wrap"></div>
+        </section>
+        <section id="settings" class="view" hidden>
+          <h2>Connect your workspace</h2>
+          <p class="muted">
+            Credentials are entered privately here, encrypted in backend
+            storage, and never returned. Leave a secret blank to keep its saved
+            value.
+          </p>
+          <ol class="setup-steps">
+            <li>
+              <strong>Create a Slack app from the manifest.</strong>
+              <p>
+                <a href="/slack-manifest.json" target="_blank" rel="noopener"
+                  >Open app manifest JSON ↗</a
+                >, then
+                <a
+                  href="https://api.slack.com/apps?new_app=1"
+                  target="_blank"
+                  rel="noopener"
+                  >create an app ↗</a
+                >
+                and choose “From a manifest”. The manifest intentionally omits
+                the event request URL: save the signing secret here before Slack
+                verifies that endpoint. The interaction URL is this site's
+                origin followed by <code>/slack/interactions</code>.
+              </p>
+            </li>
+            <li>
+              <strong>Install the app and invite it to #meow-mail.</strong>
+              <p>
+                Copy the bot token and signing secret from Slack. Save both here
+                with the channel ID, not the channel name. Leave “Allow new
+                temporary addresses” OFF during this step.
+              </p>
+            </li>
+            <li>
+              <strong>Configure Slack events after saving credentials.</strong>
+              <p>
+                In the Slack app's Event Subscriptions, set the request URL to
+                this site's origin followed by <code>/slack/events</code>.
+                Enable events and subscribe to the bot event
+                <code>message.channels</code>. Reinstall the app if Slack asks.
+              </p>
+            </li>
+            <li>
+              <strong>Connect review services, then enable Meow Mail.</strong>
+              <p>
+                Save a Tavily API key and connect your own Codex subscription
+                below, then turn on “Allow new temporary addresses” and save.
+                First enablement automatically queues the welcome announcement
+                and ban-list pin. The bot asks users to accept terms when they request an address.
+                Use the button below only to repost or update the welcome.
+              </p>
+            </li>
+          </ol>
+          <section aria-labelledby="codex-heading">
+            <div class="section-heading">
+              <h2 id="codex-heading">Codex subscription</h2>
+              <span id="credential-codex" class="badge">Checking…</span>
+            </div>
+            <p class="muted">
+              Connect your own account using the legacy Codex browser callback
+              flow, not someone else's account. Pi uses
+              <code>openai-codex / gpt-6.1-terra</code> and consumes your
+              subscription allowance; there is no paid API fallback. Tavily
+              still requires a separate API key.
+            </p>
+            <p class="fine">
+              The backend stores the grant encrypted. Access and refresh tokens
+              never return to this browser. The backend validates state and PKCE
+              using one-time encrypted pending state. Each Connect/Reconnect
+              starts a fresh 10-minute flow.
+            </p>
+            <div class="form-actions">
+              <button id="codex-connect" type="button">Connect Codex</button>
+              <button id="codex-disconnect" type="button" disabled>Disconnect Codex</button>
+            </div>
+            <div id="codex-flow" class="notice" hidden>
+              <p><a id="codex-authorize" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Open OpenAI sign-in in a new tab ↗</a></p>
+              <p id="codex-expiry"></p>
+              <p>After approving, OpenAI redirects to <code>http://localhost:1455/auth/callback</code>.
+                The local page may fail to load; that is expected. No local listener is required on your machine.
+                Copy the full callback URL from that tab's browser address bar and paste it only into this owner-protected dashboard,
+                never into the conversation thread, Slack, or another site.</p>
+              <form id="codex-complete-form" autocomplete="off">
+                <label for="codex-callback">Private full localhost callback URL</label>
+                <input id="codex-callback" type="password" autocomplete="off" spellcheck="false" autocapitalize="off" required aria-describedby="codex-callback-help">
+                <p id="codex-callback-help" class="fine">Includes private authorization data. Cleared immediately when submitted; never saved in browser storage. There is no device login or polling.</p>
+                <button id="codex-complete" type="submit">Complete Codex connection</button>
+              </form>
+            </div>
+            <p id="codex-status" class="fine" role="status" aria-live="polite"></p>
+          </section>
+          <form id="config-form" class="settings-form">
+            <div class="field">
+              <label for="slack-token"
+                >Slack bot token
+                <span id="credential-slack" class="badge"
+                  >Checking…</span
+                ></label
+              ><input
+                id="slack-token"
+                type="password"
+                name="slackToken"
+                autocomplete="new-password"
+                placeholder="Enter a new token"
+              />
+              <p class="fine">
+                Bot User OAuth Token from OAuth &amp; Permissions.
+              </p>
+            </div>
+            <div class="field">
+              <label for="slack-secret">Slack signing secret</label
+              ><input
+                id="slack-secret"
+                type="password"
+                name="slackSigningSecret"
+                autocomplete="new-password"
+                placeholder="Enter a new signing secret"
+              />
+              <p class="fine">
+                Signing Secret from Basic Information. Saved values are never
+                displayed.
+              </p>
+            </div>
+            <div class="field">
+              <label for="tavily-key"
+                >Tavily API key
+                <span id="credential-tavily" class="badge"
+                  >Checking…</span
+                ></label
+              ><input
+                id="tavily-key"
+                type="password"
+                name="tavilyKey"
+                autocomplete="new-password"
+                placeholder="Enter a new key"
+              />
+            </div>
+            <div class="field full">
+              <label for="channel">Slack channel ID</label
+              ><input
+                id="channel"
+                name="channel"
+                placeholder="C0123456789"
+                maxlength="100"
+              />
+              <p class="fine">
+                Find the channel ID in Slack's channel details.
+              </p>
+            </div>
+            <label class="checkbox full"
+              ><input id="enabled" name="enabled" type="checkbox" /> Allow new
+              temporary addresses</label
+            >
+            <div class="full form-actions">
+              <button class="primary" type="submit">Save settings</button
+              ><button id="announce" type="button">
+                Post / update pinned welcome
+              </button>
+            </div>
+          </form>
+        </section>
+        <footer class="dashboard-footer">
+          <span>Receive-only · Logged &amp; audited</span
+          ><span id="last-updated">Waiting for server</span>
+        </footer>
+      </main>
+    </div>
+    <dialog id="message-dialog">
+      <div class="section-heading">
+        <h2>Message details</h2>
+        <button id="close-message" type="button">Close</button>
+      </div>
+      <div id="message-content"></div>
+    </dialog>
+  </body>
+</html>
