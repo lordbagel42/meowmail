@@ -794,7 +794,12 @@ export class MailService extends DurableObject<Env> {
 				);
 				return;
 			}
-			const address = `${crypto.randomUUID().replaceAll("-", "").slice(0, 16)}@${this.env.MAIL_DOMAIN}`;
+			let address: string;
+			do {
+				address = `${crypto.randomUUID().slice(0, 6)}@${this.env.MAIL_DOMAIN}`;
+			} while (
+				this.rows("SELECT 1 FROM mailboxes WHERE address=?", address).length
+			);
 			this.ctx.storage.sql.exec(
 				"INSERT INTO mailboxes (address,user_id,thread_ts,expires_at,created_at) VALUES (?,?,?,?,?)",
 				address,
@@ -1342,7 +1347,7 @@ export class MailService extends DurableObject<Env> {
 					if (!rule.name.startsWith("meow-mail:")) continue;
 					const address = rule.name.slice(10);
 					if (
-						!/^[a-f0-9]{16}$/.test(address.split("@")[0]) ||
+						!/^(?:[a-f0-9]{6}|[a-f0-9]{16})$/.test(address.split("@")[0]) ||
 						!address.endsWith(`@${this.env.MAIL_DOMAIN}`)
 					)
 						continue;

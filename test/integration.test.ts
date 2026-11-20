@@ -716,6 +716,7 @@ test("mail service enforces consent, signed actors, revocation, and owner-only a
 		await consent("UOTHERUSER");
 		const boxes = (await state()).mailboxes;
 		assert.equal(boxes.length, 1);
+		assert.match(boxes[0].address, /^[a-f0-9]{6}@temp\.mrrpmraow\.com$/);
 		const accepted = sent.find((message) => message.ts === "terms-100.002");
 		assert.equal(accepted?.channel, "CTEST");
 		assert.equal(
@@ -842,6 +843,15 @@ test("mail service enforces consent, signed actors, revocation, and owner-only a
 				?.route_id,
 			null,
 			"Ambiguous deletion releases local routing capacity",
+		);
+		routes.push({
+			id: "legacy-orphan",
+			name: "meow-mail:0123456789abcdef@temp.mrrpmraow.com",
+		});
+		await tick();
+		assert.ok(
+			!routes.some((r) => r.id === "legacy-orphan"),
+			"Legacy 16-character routes are still cleaned up",
 		);
 		await event("UADMITTED", "100.010", {
 			text: "gib email for a free trial on example.org",
